@@ -40,3 +40,6 @@ buildNumber.properties
 springbok.iml
 /.idea/
 .idea/
+.gitignore
+
+

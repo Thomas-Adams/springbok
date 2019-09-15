@@ -31,8 +31,11 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         http.httpBasic()
                 .and()
                 .authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/api/**").hasRole("USER").and()
-                .csrf().disable();
+                .antMatchers(HttpMethod.GET, "/api/**").hasRole("USER")
+                .antMatchers(HttpMethod.OPTIONS, "/api/**").hasRole("USER")
+                .antMatchers(HttpMethod.GET, "/api/countries").hasRole("USER")
+                .antMatchers(HttpMethod.OPTIONS, "/api/countries").hasRole("USER").and()
+                .csrf().disable().cors().configurationSource(corsConfigurationSource());
     }
 
     @Bean
@@ -40,11 +43,13 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:4200", "http://localhost:8888", "http://127.0.0.1:8888"));
         configuration.setAllowedMethods(Arrays.asList("GET","POST", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("authorization", "accept", "content-type", "x-auth-token"));
+        configuration.setAllowedHeaders(Arrays.asList("authorization", "accept", "content-type", "x-http-method-override", "x-auth-token", "Authorization"));
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
+
 
 
 }

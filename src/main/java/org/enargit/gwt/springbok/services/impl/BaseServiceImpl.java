@@ -53,9 +53,20 @@ public abstract class BaseServiceImpl<E extends BaseEntity, ID extends Serializa
         return getRepository().findAll(pageable);
     }
 
+
+    @Override
+    public List<E> findAllByPageAsList(Pageable pageable) {
+        return getRepository().findAll(pageable).getContent();
+    }
+
     @Override
     public Page<E> findAllByPage(Pageable pageable, Predicate predicate) {
         return getRepository().findAll(predicate, pageable);
+    }
+
+    @Override
+    public List<E> findAllByPageAsList(Pageable pageable, Predicate predicate) {
+        return getRepository().findAll(predicate, pageable).getContent();
     }
 
     @Override

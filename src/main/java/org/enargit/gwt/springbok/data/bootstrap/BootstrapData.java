@@ -1,22 +1,43 @@
 package org.enargit.gwt.springbok.data.bootstrap;
 
 
+import com.opencsv.CSVReader;
+import org.enargit.gwt.springbok.data.entities.Country;
 import org.enargit.gwt.springbok.data.entities.Role;
+import org.enargit.gwt.springbok.services.impl.CountryServiceImpl;
 import org.enargit.gwt.springbok.services.impl.RoleServiceImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Date;
 
 @Component
 public class BootstrapData implements ApplicationListener<ContextRefreshedEvent> {
 
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(BootstrapData.class);
+
     private RoleServiceImpl roleService;
+
+    private CountryServiceImpl countryService;
 
     public RoleServiceImpl getRoleService() {
         return roleService;
+    }
+
+    public CountryServiceImpl getCountryService() {
+        return countryService;
+    }
+
+    @Autowired
+    public void setCountryService(CountryServiceImpl countryService) {
+        this.countryService = countryService;
     }
 
     @Autowired
@@ -27,6 +48,7 @@ public class BootstrapData implements ApplicationListener<ContextRefreshedEvent>
     @Override
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         loadRoles();
+        loadCountries();
     }
 
     private void loadRoles() {
@@ -45,4 +67,27 @@ public class BootstrapData implements ApplicationListener<ContextRefreshedEvent>
         roleAdmin.setCreatedBy("admin");
         roleService.save(roleAdmin);
     }
+
+
+    private void loadCountries() {
+
+        try (CSVReader reader = new CSVReader(new FileReader(getClass().getResource("/country.csv").getFile()));) {
+
+
+            String[] nextLine;
+
+            while ((nextLine = reader.readNext()) != null) {
+                Country country = new Country();
+                country.setName(nextLine[1]);
+                country.setDomain(nextLine[2]);
+                country.setAbbreviation(nextLine[3]);
+                country.setPhone(nextLine[4]);
+                countryService.save(country);
+            }
+        } catch (IOException e) {
+            LOGGER.error("Error during import of countries:", e);
+        }
+
+    }
+
 }

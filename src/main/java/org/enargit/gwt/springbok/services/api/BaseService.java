@@ -27,7 +27,11 @@ public interface BaseService<E extends BaseEntity, ID extends Serializable, R ex
 
     Page<E> findAllByPage(Pageable pageable);
 
+    List<E> findAllByPageAsList(Pageable pageable);
+
     Page<E> findAllByPage(Pageable pageable, Predicate predicate);
+
+    List<E> findAllByPageAsList(Pageable pageable, Predicate predicate);
 
     List<E> findAll(Predicate predicate, OrderSpecifier<?>... orderSpecifiers);
 
